@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <limits> 
 #include <cctype> 
+#include <iomanip> // Required for formatting
+#include <ctime>   // Required for strftime and localtime
 
 // --- Helper for Robust Input ---
 int getValidInt() {
@@ -28,6 +30,56 @@ std::string toLower(const std::string& str) {
                    [](unsigned char c){ return std::tolower(c); });
     return lowerStr;
 }
+
+// --- FORMATTING HELPERS ---
+
+// Truncates text with "..." if too long, or adds spaces if too short
+std::string formatCell(std::string text, size_t width) {
+    if (text.length() > width) {
+        return text.substr(0, width - 3) + "...";
+    }
+    return text + std::string(width - text.length(), ' ');
+}
+
+// Helper to format time_t to "Dec 27 2025"
+std::string formatDate(time_t t) {
+    struct tm* timeInfo = localtime(&t);
+    if (!timeInfo) return "Unknown"; // Safety check
+    
+    char buffer[20];
+    // %b = Abbreviated Month, %d = Day, %Y = Year
+    strftime(buffer, sizeof(buffer), "%b %d %Y", timeInfo); 
+    return std::string(buffer);
+}
+
+void printHeader() {
+    std::cout << std::string(110, '-') << "\n";
+    std::cout << formatCell("ID", 8) << " | "
+              << formatCell("Title", 30) << " | "
+              << formatCell("Author", 20) << " | "
+              << formatCell("Genre", 15) << " | "
+              << formatCell("Status", 10) << " | "
+              << "Due Date\n";
+    std::cout << std::string(110, '-') << "\n";
+}
+
+void printBookRow(const Book& b) {
+    std::string status = b.getIsBorrowed() ? "Borrowed" : "Available";
+    std::string dueDateStr = "-";
+
+    if (b.getIsBorrowed()) {
+        dueDateStr = formatDate(b.getDueDate());
+    }
+
+    std::cout << formatCell(b.getId(), 8) << " | "
+              << formatCell(b.getTitle(), 30) << " | "
+              << formatCell(b.getAuthor(), 20) << " | "
+              << formatCell(b.getGenre(), 15) << " | "
+              << formatCell(status, 10) << " | "
+              << dueDateStr << "\n";
+}
+
+// ---------------------------
 
 LibrarySystem::LibrarySystem() {
     loadData();
@@ -154,19 +206,16 @@ bool LibrarySystem::run() {
     
     int choice = getValidInt();
 
-    // Handle Exit
-    if (choice == 0) {
-        return false; // Return false to stop the main loop
-    }
+    if (choice == 0) return false; 
 
     if (choice == 3) {
         guestMenu();
-        return true; // Return true to loop back to login
+        return true; 
     }
 
     if (choice != 1 && choice != 2) {
         std::cout << "Invalid choice.\n";
-        return true; // Loop back
+        return true; 
     }
 
     std::string id;
@@ -176,7 +225,7 @@ bool LibrarySystem::run() {
     Person* user = findUser(id);
     if (!user) {
         std::cout << "[Error] Invalid ID. (Hint: Try 'ADMIN' if first run)\n";
-        return true; // Loop back
+        return true; 
     }
 
     if (choice == 1 && dynamic_cast<Librarian*>(user)) {
@@ -187,7 +236,7 @@ bool LibrarySystem::run() {
         std::cout << "[Error] Access Denied or Wrong Role.\n";
     }
 
-    return true; // Return true to loop back to login after logging out
+    return true; 
 }
 
 void LibrarySystem::librarianMenu(Librarian* lib) {
@@ -262,9 +311,12 @@ void LibrarySystem::viewAllBooks() {
         std::cout << "No books in library.\n";
         return;
     }
+    // Using new table format
+    printHeader();
     for (const auto& b : books) {
-        std::cout << b.toString() << "\n";
+        printBookRow(b);
     }
+    std::cout << std::string(110, '-') << "\n";
 }
 
 void LibrarySystem::removeBook() {
@@ -344,15 +396,23 @@ void LibrarySystem::searchBooks() {
     std::string queryLower = toLower(query);
 
     bool found = false;
-    std::cout << "Search Results:\n";
+    bool headerPrinted = false;
+
     for (const auto& b : books) {
         if (toLower(b.getTitle()).find(queryLower) != std::string::npos ||
             toLower(b.getAuthor()).find(queryLower) != std::string::npos ||
             toLower(b.getGenre()).find(queryLower) != std::string::npos) {
-            std::cout << b.toString() << "\n";
+            
+            if (!headerPrinted) {
+                 std::cout << "Search Results:\n";
+                 printHeader();
+                 headerPrinted = true;
+            }
+            printBookRow(b);
             found = true;
         }
     }
+    if(headerPrinted) std::cout << std::string(110, '-') << "\n";
     if (!found) std::cout << "No matching books found.\n";
 }
 
@@ -426,12 +486,30 @@ void LibrarySystem::returnBook(Member* mem) {
 
 void LibrarySystem::displayBorrowedBooks() {
     std::cout << "--- Currently Borrowed Books ---\n";
+    
+    std::cout << std::string(115, '-') << "\n";
+    std::cout << formatCell("ID", 8) << " | "
+              << formatCell("Title", 30) << " | "
+              << formatCell("Author", 20) << " | "
+              << formatCell("Genre", 15) << " | "
+              << formatCell("Due Date", 15) << " | " // Reduced width
+              << "Borrower ID\n";
+    std::cout << std::string(115, '-') << "\n";
+
     bool any = false;
     for (const auto& b : books) {
         if (b.getIsBorrowed()) {
-            std::cout << b.toString() << " [By: " << b.getBorrowedById() << "]\n";
+            std::string dateStr = formatDate(b.getDueDate());
+
+            std::cout << formatCell(b.getId(), 8) << " | "
+                      << formatCell(b.getTitle(), 30) << " | "
+                      << formatCell(b.getAuthor(), 20) << " | "
+                      << formatCell(b.getGenre(), 15) << " | "
+                      << formatCell(dateStr, 15) << " | "
+                      << b.getBorrowedById() << "\n";
             any = true;
         }
     }
+    std::cout << std::string(115, '-') << "\n";
     if(!any) std::cout << "No books are currently borrowed.\n";
 }
