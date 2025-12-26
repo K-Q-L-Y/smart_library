@@ -1,0 +1,2 @@
+Librarian|ADMIN|Default Admin|admin@lib.com
+Member|23096663|Seng Khye|sengkhye@gmail.com|Harry Potter (Borrowed)

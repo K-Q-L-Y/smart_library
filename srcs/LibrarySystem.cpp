@@ -1,0 +1,419 @@
+#include "LibrarySystem.hpp"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <algorithm>
+#include <limits> // Required for numeric_limits
+#include <cctype> // Required for tolower
+
+// --- Helper for Robust Input ---
+int getValidInt() {
+    int choice;
+    while (true) {
+        std::cin >> choice;
+        if (std::cin.fail()) {
+            std::cin.clear(); // Clear error flag
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard bad input
+            std::cout << "Invalid input. Please enter a number: ";
+        } else {
+            return choice;
+        }
+    }
+}
+
+// --- Helper for Case-Insensitive Search ---
+std::string toLower(const std::string& str) {
+    std::string lowerStr = str;
+    std::transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(),
+                   [](unsigned char c){ return std::tolower(c); });
+    return lowerStr;
+}
+
+LibrarySystem::LibrarySystem() {
+    loadData();
+}
+
+LibrarySystem::~LibrarySystem() {
+    saveData();
+    for (auto user : users) {
+        delete user;
+    }
+    users.clear();
+}
+
+// --- File Persistence ---
+void LibrarySystem::saveData() {
+    std::ofstream bOut(bookFile);
+    for (const auto& book : books) {
+        bOut << book.toFileString() << "\n";
+    }
+    bOut.close();
+
+    std::ofstream uOut(userFile);
+    for (const auto& user : users) {
+        if (user->getRole() != "Guest") {
+            uOut << user->toFileString() << "\n";
+        }
+    }
+    uOut.close();
+}
+
+void LibrarySystem::loadData() {
+    // 1. Load Books
+    std::ifstream bIn(bookFile);
+    std::string line;
+    while (std::getline(bIn, line)) {
+        if(line.empty()) continue;
+        std::stringstream ss(line);
+        std::string segment;
+        std::vector<std::string> seglist;
+        while (std::getline(ss, segment, '|')) {
+            seglist.push_back(segment);
+        }
+        if (seglist.size() >= 7) {
+            Book b(seglist[0], seglist[1], seglist[2], seglist[3]);
+            bool borrowed = (seglist[4] == "1");
+            std::string borrower = seglist[6];
+            
+            if (borrowed) b.borrowBook(borrower, 0); 
+
+            if (seglist.size() > 7) {
+                b.loadReservationsFromString(seglist[7]);
+            }
+            books.push_back(b);
+        }
+    }
+    bIn.close();
+
+    // 2. Load Users
+    std::ifstream uIn(userFile);
+    while (std::getline(uIn, line)) {
+        if(line.empty()) continue;
+        std::stringstream ss(line);
+        std::string type, id, name, email, history;
+        std::getline(ss, type, '|');
+        std::getline(ss, id, '|');
+        std::getline(ss, name, '|');
+        std::getline(ss, email, '|');
+
+        if (type == "Librarian") {
+            users.push_back(new Librarian(id, name, email));
+        } else if (type == "Member") {
+            Member* m = new Member(id, name, email);
+            if (std::getline(ss, history, '|')) {
+                m->loadHistory(history);
+            }
+            users.push_back(m);
+        }
+    }
+    uIn.close();
+
+    // --- DEFAULT ADMIN CREATION ---
+    if (users.empty()) {
+        std::cout << "[System] No users found. Creating Default Admin account.\n";
+        std::cout << "[System] ID: ADMIN | Name: Super Admin\n"; 
+        users.push_back(new Librarian("ADMIN", "Super Admin", "admin@library.com"));
+    }
+}
+
+// --- Helpers ---
+Person* LibrarySystem::findUser(std::string id) {
+    for (auto user : users) {
+        if (user->getId() == id) return user;
+    }
+    return nullptr;
+}
+
+Book* LibrarySystem::findBook(std::string id) {
+    for (auto& book : books) {
+        if (book.getId() == id) return &book;
+    }
+    return nullptr;
+}
+
+void LibrarySystem::calculateFine(time_t dueDate) {
+    time_t now = time(0);
+    double seconds = difftime(now, dueDate);
+    if (seconds > 0) {
+        int daysOverdue = (int)(seconds / (60 * 60 * 24));
+        std::cout << "[!] Book is overdue by " << daysOverdue << " days.\n";
+        std::cout << "Fine: $" << daysOverdue * 0.50 << "\n"; 
+    } else {
+        std::cout << "Returned on time. No fine.\n";
+    }
+}
+
+// --- Menus ---
+void LibrarySystem::run() {
+    std::cout << "\n--- Smart Library Management System ---\n";
+    std::cout << "Login as:\n1. Librarian\n2. Member\n3. Guest\nChoice: ";
+    
+    int choice = getValidInt();
+
+    if (choice == 3) {
+        guestMenu();
+        return;
+    }
+
+    if (choice != 1 && choice != 2) {
+        std::cout << "Invalid choice.\n";
+        return;
+    }
+
+    std::string id;
+    std::cout << "Enter User ID: ";
+    std::cin >> id;
+
+    Person* user = findUser(id);
+    if (!user) {
+        std::cout << "[Error] Invalid ID. (Hint: Try 'ADMIN' if first run)\n";
+        return;
+    }
+
+    if (choice == 1 && dynamic_cast<Librarian*>(user)) {
+        librarianMenu(dynamic_cast<Librarian*>(user));
+    } else if (choice == 2 && dynamic_cast<Member*>(user)) {
+        memberMenu(dynamic_cast<Member*>(user));
+    } else {
+        std::cout << "[Error] Access Denied or Wrong Role.\n";
+    }
+}
+
+void LibrarySystem::librarianMenu(Librarian* lib) {
+    int choice;
+    do {
+        std::cout << "\n--- Librarian Menu (" << lib->getName() << ") ---\n";
+        std::cout << "1. Add Book\n2. Remove Book\n3. Register New User\n4. Remove User\n";
+        std::cout << "5. View All Books\n6. Display Borrowed Books\n0. Exit\nChoice: ";
+        
+        choice = getValidInt();
+
+        switch (choice) {
+            case 1: addBook(); break;
+            case 2: removeBook(); break;
+            case 3: registerMember(); break; 
+            case 4: removeMember(); break;
+            case 5: viewAllBooks(); break;
+            case 6: displayBorrowedBooks(); break;
+            case 0: std::cout << "Logging out...\n"; break;
+            default: std::cout << "Invalid option.\n";
+        }
+    } while (choice != 0);
+}
+
+void LibrarySystem::memberMenu(Member* mem) {
+    int choice;
+    do {
+        std::cout << "\n--- Member Menu (" << mem->getName() << ") ---\n";
+        std::cout << "1. Search Books\n2. Borrow Book\n3. Return Book\n4. View History\n0. Exit\nChoice: ";
+        
+        choice = getValidInt();
+
+        switch (choice) {
+            case 1: searchBooks(); break;
+            case 2: borrowBook(mem); break;
+            case 3: returnBook(mem); break;
+            case 4: mem->displayHistory(); break;
+            case 0: std::cout << "Logging out...\n"; break;
+            default: std::cout << "Invalid option.\n";
+        }
+    } while (choice != 0);
+}
+
+void LibrarySystem::guestMenu() {
+    std::cout << "\n--- Guest Menu ---\n";
+    searchBooks(); 
+    std::cout << "\nGuest access finished. Please register to borrow books.\n";
+}
+
+// --- Core Functionalities ---
+
+void LibrarySystem::addBook() {
+    std::string id, title, author, genre;
+    
+    std::cout << "Enter Book ID: "; 
+    std::cin >> id;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    std::cout << "Enter Title: "; 
+    std::getline(std::cin, title);
+    std::cout << "Enter Author: "; 
+    std::getline(std::cin, author);
+    std::cout << "Enter Genre: "; 
+    std::getline(std::cin, genre);
+
+    books.emplace_back(id, title, author, genre);
+    std::cout << "Book added successfully.\n";
+}
+
+void LibrarySystem::viewAllBooks() {
+    if(books.empty()) {
+        std::cout << "No books in library.\n";
+        return;
+    }
+    for (const auto& b : books) {
+        std::cout << b.toString() << "\n";
+    }
+}
+
+void LibrarySystem::removeBook() {
+    std::string id;
+    std::cout << "Enter Book ID to remove: "; 
+    std::cin >> id; 
+    
+    auto it = std::remove_if(books.begin(), books.end(), [&](Book& b) { return b.getId() == id; });
+    if (it != books.end()) {
+        books.erase(it, books.end());
+        std::cout << "Book removed.\n";
+    } else {
+        std::cout << "Book not found.\n";
+    }
+}
+
+void LibrarySystem::registerMember() {
+    std::cout << "Register New Account:\n1. Library Member\n2. Librarian (Staff)\nChoice: ";
+    int type = getValidInt();
+    
+    if (type != 1 && type != 2) {
+        std::cout << "Invalid account type selected.\n";
+        return;
+    }
+
+    std::string id, name, email;
+    std::cout << "Enter New ID: "; std::cin >> id;
+    
+    if (findUser(id) != nullptr) {
+        std::cout << "[Error] User ID already exists!\n";
+        return;
+    }
+
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    
+    std::cout << "Enter Name: "; std::getline(std::cin, name);
+    std::cout << "Enter Email: "; std::cin >> email;
+    
+    if (type == 1) {
+        users.push_back(new Member(id, name, email));
+        std::cout << "Member registered successfully.\n";
+    } else {
+        users.push_back(new Librarian(id, name, email));
+        std::cout << "Librarian registered successfully.\n";
+    }
+}
+
+void LibrarySystem::removeMember() {
+    std::string id;
+    std::cout << "Enter User ID to remove: "; std::cin >> id;
+    
+    if (id == "ADMIN") {
+        std::cout << "[Error] Cannot remove the default ADMIN account.\n";
+        return;
+    }
+
+    auto it = std::remove_if(users.begin(), users.end(), [&](Person* p) {
+        return p->getId() == id; 
+    });
+    
+    if (it != users.end()) {
+        delete *it; 
+        users.erase(it, users.end());
+        std::cout << "User removed.\n";
+    } else {
+        std::cout << "User not found.\n";
+    }
+}
+
+// UPDATED: Case-Insensitive Search
+void LibrarySystem::searchBooks() {
+    std::string query;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    
+    std::cout << "Search (Title/Author/Genre): "; 
+    std::getline(std::cin, query);
+
+    // Convert query to lowercase
+    std::string queryLower = toLower(query);
+
+    bool found = false;
+    std::cout << "Search Results:\n";
+    for (const auto& b : books) {
+        // Convert book details to lowercase for comparison
+        if (toLower(b.getTitle()).find(queryLower) != std::string::npos ||
+            toLower(b.getAuthor()).find(queryLower) != std::string::npos ||
+            toLower(b.getGenre()).find(queryLower) != std::string::npos) {
+            std::cout << b.toString() << "\n";
+            found = true;
+        }
+    }
+    if (!found) std::cout << "No matching books found.\n";
+}
+
+void LibrarySystem::borrowBook(Member* mem) {
+    std::string bookId;
+    std::cout << "Enter Book ID to borrow: "; 
+    std::cin >> bookId;
+
+    Book* book = findBook(bookId);
+    if (!book) {
+        std::cout << "[Error] Book does not exist.\n";
+        return;
+    }
+
+    if (book->getIsBorrowed()) {
+        std::cout << "Book is currently unavailable.\n";
+        char ch;
+        std::cout << "Do you want to reserve it? (y/n): ";
+        std::cin >> ch;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        
+        if (ch == 'y' || ch == 'Y') {
+            book->addReservation(mem->getId()); 
+            std::cout << "You have been added to the reservation queue.\n";
+        }
+    } else {
+        if (book->hasReservations()) {
+            std::string nextUser = book->processNextReservation();
+            if (nextUser != mem->getId()) {
+                std::cout << "This book is reserved for user: " << nextUser << ". You cannot borrow it yet.\n";
+                return; 
+            }
+        }
+        
+        book->borrowBook(mem->getId(), 14); 
+        mem->addToHistory(book->getTitle() + " (Borrowed)"); 
+        std::cout << "Book borrowed successfully.\n";
+    }
+}
+
+void LibrarySystem::returnBook(Member* mem) {
+    std::string bookId;
+    std::cout << "Enter Book ID to return: "; std::cin >> bookId;
+
+    Book* book = findBook(bookId);
+    if (!book) {
+        std::cout << "Invalid Book ID.\n"; 
+        return;
+    }
+
+    if (book->getBorrowedById() != mem->getId()) {
+        std::cout << "[Error] You did not borrow this book.\n"; 
+        return;
+    }
+
+    calculateFine(book->getDueDate()); 
+    book->returnBook();
+    mem->addToHistory(book->getTitle() + " (Returned)");
+    std::cout << "Book returned.\n";
+}
+
+void LibrarySystem::displayBorrowedBooks() {
+    std::cout << "--- Currently Borrowed Books ---\n";
+    bool any = false;
+    for (const auto& b : books) {
+        if (b.getIsBorrowed()) {
+            std::cout << b.toString() << " [By: " << b.getBorrowedById() << "]\n";
+            any = true;
+        }
+    }
+    if(!any) std::cout << "No books are currently borrowed.\n";
+}
