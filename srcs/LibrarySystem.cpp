@@ -3,8 +3,8 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
-#include <limits> // Required for numeric_limits
-#include <cctype> // Required for tolower
+#include <limits> 
+#include <cctype> 
 
 // --- Helper for Robust Input ---
 int getValidInt() {
@@ -12,8 +12,8 @@ int getValidInt() {
     while (true) {
         std::cin >> choice;
         if (std::cin.fail()) {
-            std::cin.clear(); // Clear error flag
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard bad input
+            std::cin.clear(); 
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
             std::cout << "Invalid input. Please enter a number: ";
         } else {
             return choice;
@@ -59,7 +59,6 @@ void LibrarySystem::saveData() {
 }
 
 void LibrarySystem::loadData() {
-    // 1. Load Books
     std::ifstream bIn(bookFile);
     std::string line;
     while (std::getline(bIn, line)) {
@@ -85,7 +84,6 @@ void LibrarySystem::loadData() {
     }
     bIn.close();
 
-    // 2. Load Users
     std::ifstream uIn(userFile);
     while (std::getline(uIn, line)) {
         if(line.empty()) continue;
@@ -108,7 +106,6 @@ void LibrarySystem::loadData() {
     }
     uIn.close();
 
-    // --- DEFAULT ADMIN CREATION ---
     if (users.empty()) {
         std::cout << "[System] No users found. Creating Default Admin account.\n";
         std::cout << "[System] ID: ADMIN | Name: Super Admin\n"; 
@@ -144,20 +141,32 @@ void LibrarySystem::calculateFine(time_t dueDate) {
 }
 
 // --- Menus ---
-void LibrarySystem::run() {
-    std::cout << "\n--- Smart Library Management System ---\n";
-    std::cout << "Login as:\n1. Librarian\n2. Member\n3. Guest\nChoice: ";
+bool LibrarySystem::run() {
+    std::cout << "\n=======================================\n";
+    std::cout << "   SMART LIBRARY MANAGEMENT SYSTEM     \n";
+    std::cout << "=======================================\n";
+    std::cout << "1. Login as Librarian\n";
+    std::cout << "2. Login as Member\n";
+    std::cout << "3. Guest Access\n";
+    std::cout << "0. Exit Program\n";
+    std::cout << "---------------------------------------\n";
+    std::cout << "Choice: ";
     
     int choice = getValidInt();
 
+    // Handle Exit
+    if (choice == 0) {
+        return false; // Return false to stop the main loop
+    }
+
     if (choice == 3) {
         guestMenu();
-        return;
+        return true; // Return true to loop back to login
     }
 
     if (choice != 1 && choice != 2) {
         std::cout << "Invalid choice.\n";
-        return;
+        return true; // Loop back
     }
 
     std::string id;
@@ -167,7 +176,7 @@ void LibrarySystem::run() {
     Person* user = findUser(id);
     if (!user) {
         std::cout << "[Error] Invalid ID. (Hint: Try 'ADMIN' if first run)\n";
-        return;
+        return true; // Loop back
     }
 
     if (choice == 1 && dynamic_cast<Librarian*>(user)) {
@@ -177,6 +186,8 @@ void LibrarySystem::run() {
     } else {
         std::cout << "[Error] Access Denied or Wrong Role.\n";
     }
+
+    return true; // Return true to loop back to login after logging out
 }
 
 void LibrarySystem::librarianMenu(Librarian* lib) {
@@ -184,7 +195,7 @@ void LibrarySystem::librarianMenu(Librarian* lib) {
     do {
         std::cout << "\n--- Librarian Menu (" << lib->getName() << ") ---\n";
         std::cout << "1. Add Book\n2. Remove Book\n3. Register New User\n4. Remove User\n";
-        std::cout << "5. View All Books\n6. Display Borrowed Books\n0. Exit\nChoice: ";
+        std::cout << "5. View All Books\n6. Display Borrowed Books\n0. Logout\nChoice: ";
         
         choice = getValidInt();
 
@@ -205,7 +216,7 @@ void LibrarySystem::memberMenu(Member* mem) {
     int choice;
     do {
         std::cout << "\n--- Member Menu (" << mem->getName() << ") ---\n";
-        std::cout << "1. Search Books\n2. Borrow Book\n3. Return Book\n4. View History\n0. Exit\nChoice: ";
+        std::cout << "1. Search Books\n2. Borrow Book\n3. Return Book\n4. View History\n0. Logout\nChoice: ";
         
         choice = getValidInt();
 
@@ -345,14 +356,11 @@ void LibrarySystem::searchBooks() {
     if (!found) std::cout << "No matching books found.\n";
 }
 
-// UPDATED: Now prompts for search first, then ID
 void LibrarySystem::borrowBook(Member* mem) {
     std::cout << "\n--- Find a Book to Borrow ---\n";
     
-    // Step 1: Run the search tool first
     searchBooks();
 
-    // Step 2: Prompt for ID after seeing results
     std::string bookId;
     std::cout << "\n--- Enter Book ID ---\n";
     std::cout << "Enter Book ID to borrow (or enter '0' to cancel): "; 

@@ -25,7 +25,7 @@ public:
     void saveData(); // 
 
     // Menu Operations [cite: 23]
-    void run();
+    bool run();
     void librarianMenu(Librarian* lib);
     void memberMenu(Member* mem);
     void guestMenu();
