@@ -5,7 +5,7 @@ OBJDIR		= objs
 OBJS		= $(subst $(SRCDIR),$(OBJDIR),$(subst .cpp,.o,$(SRCS)))
 OBJDIRS		= $(sort $(dir $(OBJS)))
 
-MAINCPP		= main.cpp
+MAINCPP		= main/main.cpp
 
 CWD			:= $(shell pwd)
 FOLDER		:= $(notdir $(CWD))

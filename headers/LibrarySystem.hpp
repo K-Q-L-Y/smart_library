@@ -9,8 +9,8 @@ class LibrarySystem {
 private:
     std::vector<Book> books;
     std::vector<Person*> users; // Polymorphic container 
-    const std::string bookFile = "books.txt";
-    const std::string userFile = "users.txt";
+    const std::string bookFile = "data/books.txt";
+    const std::string userFile = "data/users.txt";
 
     // Helpers
     Person* findUser(std::string id);
