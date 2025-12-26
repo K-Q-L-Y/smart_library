@@ -323,7 +323,6 @@ void LibrarySystem::removeMember() {
     }
 }
 
-// UPDATED: Case-Insensitive Search
 void LibrarySystem::searchBooks() {
     std::string query;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -331,13 +330,11 @@ void LibrarySystem::searchBooks() {
     std::cout << "Search (Title/Author/Genre): "; 
     std::getline(std::cin, query);
 
-    // Convert query to lowercase
     std::string queryLower = toLower(query);
 
     bool found = false;
     std::cout << "Search Results:\n";
     for (const auto& b : books) {
-        // Convert book details to lowercase for comparison
         if (toLower(b.getTitle()).find(queryLower) != std::string::npos ||
             toLower(b.getAuthor()).find(queryLower) != std::string::npos ||
             toLower(b.getGenre()).find(queryLower) != std::string::npos) {
@@ -348,10 +345,23 @@ void LibrarySystem::searchBooks() {
     if (!found) std::cout << "No matching books found.\n";
 }
 
+// UPDATED: Now prompts for search first, then ID
 void LibrarySystem::borrowBook(Member* mem) {
+    std::cout << "\n--- Find a Book to Borrow ---\n";
+    
+    // Step 1: Run the search tool first
+    searchBooks();
+
+    // Step 2: Prompt for ID after seeing results
     std::string bookId;
-    std::cout << "Enter Book ID to borrow: "; 
+    std::cout << "\n--- Enter Book ID ---\n";
+    std::cout << "Enter Book ID to borrow (or enter '0' to cancel): "; 
     std::cin >> bookId;
+
+    if (bookId == "0") {
+        std::cout << "Borrowing cancelled.\n";
+        return;
+    }
 
     Book* book = findBook(bookId);
     if (!book) {
