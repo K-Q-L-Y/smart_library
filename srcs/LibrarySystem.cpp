@@ -385,7 +385,7 @@ void LibrarySystem::removeMember() {
     }
 }
 
-void LibrarySystem::searchBooks() {
+bool LibrarySystem::searchBooks() {
     std::string query;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     
@@ -403,9 +403,9 @@ void LibrarySystem::searchBooks() {
             toLower(b.getGenre()).find(queryLower) != std::string::npos) {
             
             if (!headerPrinted) {
-                 std::cout << "Search Results:\n";
-                 printHeader();
-                 headerPrinted = true;
+				std::cout << "Search Results:\n";
+				printHeader();
+				headerPrinted = true;
             }
             printBookRow(b);
             found = true;
@@ -413,12 +413,13 @@ void LibrarySystem::searchBooks() {
     }
     if(headerPrinted) std::cout << std::string(110, '-') << "\n";
     if (!found) std::cout << "No matching books found.\n";
+	return found;
 }
 
 void LibrarySystem::borrowBook(Member* mem) {
     std::cout << "\n--- Find a Book to Borrow ---\n";
     
-    searchBooks();
+    if (!searchBooks()) return;
 
     std::string bookId;
     std::cout << "\n--- Enter Book ID ---\n";
@@ -444,43 +445,84 @@ void LibrarySystem::borrowBook(Member* mem) {
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         
         if (ch == 'y' || ch == 'Y') {
-            book->addReservation(mem->getId()); 
+            book->addReservation(mem->getId()); // todo
             std::cout << "You have been added to the reservation queue.\n";
         }
-    } else {
-        if (book->hasReservations()) {
-            std::string nextUser = book->processNextReservation();
-            if (nextUser != mem->getId()) {
-                std::cout << "This book is reserved for user: " << nextUser << ". You cannot borrow it yet.\n";
-                return; 
-            }
-        }
-        
-        book->borrowBook(mem->getId(), 14); 
+    }
+	// else { // todo: can remove this, add to returnbook so that when return can process
+    //     if (book->hasReservations()) {
+    //         std::string nextUser = book->processNextReservation();
+    //         if (nextUser != mem->getId()) {
+    //             std::cout << "This book is reserved for user: " << nextUser << ". You cannot borrow it yet.\n";
+    //             return; 
+    //         }
+    //     }
+    else {
+        book->borrowBook(mem->getId(), 7); 
         mem->addToHistory(book->getTitle() + " (Borrowed)"); 
         std::cout << "Book borrowed successfully.\n";
     }
 }
 
 void LibrarySystem::returnBook(Member* mem) {
+    std::cout << "\n--- Return a Book ---\n";
+
+    // Filter books borrowed by this specific member
+    std::vector<Book*> myBooks;
+    for (auto& b : books) {
+        if (b.getBorrowedById() == mem->getId()) {
+            myBooks.push_back(&b);
+        }
+    }
+
+    if (myBooks.empty()) {
+        std::cout << "You currently have no borrowed books to return.\n";
+        return;
+    }
+
+    // Display them nicely
+    std::cout << "Your Borrowed Books:\n";
+    printHeader();
+    for (Book* b : myBooks) {
+        printBookRow(*b);
+    }
+    std::cout << std::string(110, '-') << "\n";
+
+    // Prompt
     std::string bookId;
-    std::cout << "Enter Book ID to return: "; std::cin >> bookId;
+    std::cout << "Enter Book ID to return (or enter '0' to cancel): "; 
+    std::cin >> bookId;
+
+    if (bookId == "0") {
+        std::cout << "Return cancelled.\n";
+        return;
+    }
 
     Book* book = findBook(bookId);
     if (!book) {
-        std::cout << "Invalid Book ID.\n"; 
+        std::cout << "[Error] Invalid Book ID.\n"; 
         return;
     }
 
+    // Double check ownership (security)
     if (book->getBorrowedById() != mem->getId()) {
-        std::cout << "[Error] You did not borrow this book.\n"; 
+        std::cout << "[Error] You did not borrow this book (ID: " << bookId << ").\n"; 
         return;
     }
 
-    calculateFine(book->getDueDate()); 
-    book->returnBook();
+    calculateFine(book->getDueDate());
+	
+	// settle reservations
+	if (book->hasReservations()) {
+		std::string nextUser = book->processNextReservation();
+		Member *tmp = dynamic_cast<Member*>(findUser(nextUser));
+		book->borrowBook(tmp->getId(), 7); 
+        tmp->addToHistory(book->getTitle() + " (Borrowed)"); 
+	}
+	else
+	    book->returnBook();
     mem->addToHistory(book->getTitle() + " (Returned)");
-    std::cout << "Book returned.\n";
+    std::cout << "Book returned successfully.\n";
 }
 
 void LibrarySystem::displayBorrowedBooks() {

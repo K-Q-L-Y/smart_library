@@ -38,7 +38,7 @@ public:
     void removeMember();
     void borrowBook(Member* mem);
     void returnBook(Member* mem);
-    void searchBooks();
+    bool searchBooks();
     void displayBorrowedBooks();
 };
 
