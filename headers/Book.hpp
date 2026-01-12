@@ -17,7 +17,7 @@ private:
     std::queue<std::string> reservationQueue; // 
 
 public:
-    Book(std::string id, std::string title, std::string author, std::string genre);
+    Book(std::string id, std::string title, std::string author, std::string genre, time_t dueDate);
     
     // Getters
     std::string getId() const;
@@ -29,7 +29,7 @@ public:
     std::string getBorrowedById() const;
 
     // Setters and Operations
-    void borrowBook(std::string memberId, int daysToBorrow);
+    void borrowBook(std::string memberId, int daysToBorrow, time_t due = 0);
     void returnBook();
     void addReservation(std::string memberId);
     std::string processNextReservation(); // Returns member ID of next in line

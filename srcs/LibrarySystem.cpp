@@ -121,11 +121,12 @@ void LibrarySystem::loadData() {
             seglist.push_back(segment);
         }
         if (seglist.size() >= 7) {
-            Book b(seglist[0], seglist[1], seglist[2], seglist[3]);
-            bool borrowed = (seglist[4] == "1");
+            Book b(seglist[0], seglist[1], seglist[2], seglist[3], static_cast<time_t>(std::stoll(seglist[5])));
+            std::cout << "bookid: " << seglist[0] << " load duedate: " << static_cast<time_t>(std::stoll(seglist[5])) << std::endl;
+			bool borrowed = (seglist[4] == "1");
             std::string borrower = seglist[6];
             
-            if (borrowed) b.borrowBook(borrower, 0); 
+            if (borrowed) b.borrowBook(borrower, 0, static_cast<time_t>(std::stoll(seglist[5]))); 
 
             if (seglist.size() > 7) {
                 b.loadReservationsFromString(seglist[7]);
@@ -301,7 +302,7 @@ void LibrarySystem::addBook() {
     std::cout << "Enter Genre: "; 
     std::getline(std::cin, genre);
 
-    books.emplace_back(id, title, author, genre);
+    books.emplace_back(id, title, author, genre, time(0));
     std::cout << "Book added successfully.\n";
 }
 
@@ -511,7 +512,7 @@ void LibrarySystem::returnBook(Member* mem) {
     }
 
     calculateFine(book->getDueDate());
-	
+
 	// settle reservations
 	if (book->hasReservations()) {
 		std::string nextUser = book->processNextReservation();
@@ -533,7 +534,7 @@ void LibrarySystem::displayBorrowedBooks() {
               << formatCell("Title", 30) << " | "
               << formatCell("Author", 20) << " | "
               << formatCell("Genre", 15) << " | "
-              << formatCell("Due Date", 15) << " | " // Reduced width
+              << formatCell("Due Date", 15) << " | "
               << "Borrower ID\n";
     std::cout << std::string(115, '-') << "\n";
 

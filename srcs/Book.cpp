@@ -1,10 +1,11 @@
 #include "Book.hpp"
+#include <string>
 #include <sstream>
 #include <iomanip>
 #include <ctime>
 
-Book::Book(std::string id, std::string title, std::string author, std::string genre)
-    : id(id), title(title), author(author), genre(genre), isBorrowed(false), dueDate(0), borrowedByMemberId("") {}
+Book::Book(std::string id, std::string title, std::string author, std::string genre, time_t dueDate)
+    : id(id), title(title), author(author), genre(genre), isBorrowed(false), dueDate(dueDate), borrowedByMemberId("") {}
 
 std::string Book::getId() const { return id; }
 std::string Book::getTitle() const { return title; }
@@ -14,11 +15,16 @@ bool Book::getIsBorrowed() const { return isBorrowed; }
 time_t Book::getDueDate() const { return dueDate; }
 std::string Book::getBorrowedById() const { return borrowedByMemberId; }
 
-void Book::borrowBook(std::string memberId, int daysToBorrow) {
+#include <iostream>
+void Book::borrowBook(std::string memberId, int daysToBorrow, time_t due) {
     isBorrowed = true;
     borrowedByMemberId = memberId;
     // Set due date to current time + days
-    dueDate = time(0) + (daysToBorrow * 24 * 60 * 60);
+	if (due)
+		dueDate = due;
+	else
+	    dueDate = time(0) + (daysToBorrow * 24 * 60 * 60);
+	std::cout << "dueDate: " << dueDate << std::endl;
 }
 
 void Book::returnBook() {
