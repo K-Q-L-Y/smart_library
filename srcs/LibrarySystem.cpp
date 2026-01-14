@@ -399,7 +399,8 @@ bool LibrarySystem::searchBooks() {
     bool headerPrinted = false;
 
     for (const auto& b : books) {
-        if (toLower(b.getTitle()).find(queryLower) != std::string::npos ||
+        if (toLower(b.getId()).find(queryLower) != std::string::npos ||
+			toLower(b.getTitle()).find(queryLower) != std::string::npos ||
             toLower(b.getAuthor()).find(queryLower) != std::string::npos ||
             toLower(b.getGenre()).find(queryLower) != std::string::npos) {
             
