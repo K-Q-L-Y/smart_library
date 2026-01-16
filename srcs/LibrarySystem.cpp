@@ -160,8 +160,8 @@ void LibrarySystem::loadData() {
 
     if (users.empty()) {
         std::cout << "[System] No users found. Creating Default Admin account.\n";
-        std::cout << "[System] ID: ADMIN | Name: Super Admin\n"; 
-        users.push_back(new Librarian("ADMIN", "Super Admin", "admin@library.com"));
+        std::cout << "[System] ID: admin | Name: Admin\n"; 
+        users.push_back(new Librarian("admin", "Admin", "admin@library.com"));
     }
 }
 
@@ -224,7 +224,7 @@ bool LibrarySystem::run() {
 
     Person* user = findUser(id);
     if (!user) {
-        std::cout << "[Error] Invalid ID. (Hint: Try 'ADMIN' if first run)\n";
+        std::cout << "[Error] Invalid ID. (Hint: Try 'admin' if first run)\n";
         return true; 
     }
 
@@ -373,8 +373,8 @@ void LibrarySystem::removeMember() {
     std::string id;
     std::cout << "Enter User ID to remove: "; std::cin >> id;
     
-    if (id == "ADMIN") {
-        std::cout << "[Error] Cannot remove the default ADMIN account.\n";
+    if (id == "admin") {
+        std::cout << "[Error] Cannot remove the default admin account.\n";
         return;
     }
 

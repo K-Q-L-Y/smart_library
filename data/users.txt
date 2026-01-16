@@ -1,4 +1,4 @@
-Librarian|ADMIN|Super Admin|admin@library.com
+Librarian|admin|Admin|admin@library.com
 Member|23096663|Seng Khye|sengkhye@gmail.com|Harry Potter (Borrowed),Harry Potter (Returned),Harry Potter (Borrowed),Harry Potter (Returned),Harry Potter (Borrowed),Harry Potter (Returned),Harry Potter (Returned)
 Librarian|1234|Chin Yen|cy@gmail.com
 Member|1|Member A|a@gmail.com|Harry Potter (Borrowed),Harry Potter (Borrowed),Harry Potter (Returned),Harry Potter (Borrowed),Lord of the Rings (Borrowed),Harry Potter (Returned),Harry Potter (Borrowed),Lord of the Rings (Returned),Lord of the Rings (Borrowed),Lord of the Rings (Returned),Harry Potter (Returned)
