@@ -324,13 +324,18 @@ void LibrarySystem::removeBook() {
     std::cout << "Enter Book ID to remove: "; 
     std::cin >> id; 
     
-    auto it = std::remove_if(books.begin(), books.end(), [&](Book& b) { return b.getId() == id; });
-    if (it != books.end()) {
-        books.erase(it, books.end());
-        std::cout << "Book removed.\n";
-    } else {
-        std::cout << "Book not found.\n";
+    // CHANGED: List-specific erasure
+    bool found = false;
+    for (auto it = books.begin(); it != books.end(); ++it) {
+        if (it->getId() == id) {
+            books.erase(it);
+            found = true;
+            std::cout << "Book removed.\n";
+            break; 
+        }
     }
+    
+    if (!found) std::cout << "Book not found.\n";
 }
 
 void LibrarySystem::registerMember() {
@@ -373,17 +378,19 @@ void LibrarySystem::removeMember() {
         return;
     }
 
-    auto it = std::remove_if(users.begin(), users.end(), [&](Person* p) {
-        return p->getId() == id; 
-    });
-    
-    if (it != users.end()) {
-        delete *it; 
-        users.erase(it, users.end());
-        std::cout << "User removed.\n";
-    } else {
-        std::cout << "User not found.\n";
+    // CHANGED: List-specific erasure
+    bool found = false;
+    for (auto it = users.begin(); it != users.end(); ++it) {
+        if ((*it)->getId() == id) {
+            delete *it; // Free memory
+            users.erase(it); // Remove node
+            found = true;
+            std::cout << "User removed.\n";
+            break;
+        }
     }
+
+    if (!found) std::cout << "User not found.\n";
 }
 
 bool LibrarySystem::searchBooks() {

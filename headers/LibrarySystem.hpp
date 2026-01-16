@@ -3,12 +3,13 @@
 
 #include "Book.hpp"
 #include "Person.hpp"
+#include <list>
 #include <vector>
 
 class LibrarySystem {
 private:
-    std::vector<Book> books;
-    std::vector<Person*> users; // Polymorphic container 
+    std::list<Book> books;
+    std::list<Person*> users; // Polymorphic container 
     const std::string bookFile = "data/books.txt";
     const std::string userFile = "data/users.txt";
 
