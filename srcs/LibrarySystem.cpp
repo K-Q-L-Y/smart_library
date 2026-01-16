@@ -197,9 +197,10 @@ bool LibrarySystem::run() {
     std::cout << "\n=======================================\n";
     std::cout << "   SMART LIBRARY MANAGEMENT SYSTEM     \n";
     std::cout << "=======================================\n";
-    std::cout << "1. Login as Librarian\n";
-    std::cout << "2. Login as Member\n";
-    std::cout << "3. Guest Access\n";
+	std::cout << "Login as: \n";
+    std::cout << "1. Librarian\n";
+    std::cout << "2. Member\n";
+    std::cout << "3. Continue as Guest\n";
     std::cout << "0. Exit Program\n";
     std::cout << "---------------------------------------\n";
     std::cout << "Choice: ";
@@ -243,8 +244,8 @@ void LibrarySystem::librarianMenu(Librarian* lib) {
     int choice;
     do {
         std::cout << "\n--- Librarian Menu (" << lib->getName() << ") ---\n";
-        std::cout << "1. Add Book\n2. Remove Book\n3. Register New User\n4. Remove User\n";
-        std::cout << "5. View All Books\n6. Display Borrowed Books\n0. Logout\nChoice: ";
+        std::cout << "1. Add Book\n2. Remove Book\n3. Add User\n4. Remove User\n";
+        std::cout << "5. View All Books\n0. Logout\nChoice: ";
         
         choice = getValidInt();
 
@@ -254,7 +255,6 @@ void LibrarySystem::librarianMenu(Librarian* lib) {
             case 3: registerMember(); break; 
             case 4: removeMember(); break;
             case 5: viewAllBooks(); break;
-            case 6: displayBorrowedBooks(); break;
             case 0: std::cout << "Logging out...\n"; break;
             default: std::cout << "Invalid option.\n";
         }
@@ -265,7 +265,7 @@ void LibrarySystem::memberMenu(Member* mem) {
     int choice;
     do {
         std::cout << "\n--- Member Menu (" << mem->getName() << ") ---\n";
-        std::cout << "1. Search Books\n2. Borrow Book\n3. Return Book\n4. View History\n0. Logout\nChoice: ";
+        std::cout << "1. Search Books\n2. Borrow Book\n3. Return Book\n4. View Borrowed Books\n5. View History\n0. Logout\nChoice: ";
         
         choice = getValidInt();
 
@@ -273,7 +273,8 @@ void LibrarySystem::memberMenu(Member* mem) {
             case 1: searchBooks(); break;
             case 2: borrowBook(mem); break;
             case 3: returnBook(mem); break;
-            case 4: mem->displayHistory(); break;
+			case 4: displayBorrowedBooks(mem); break;
+            case 5: mem->displayHistory(); break;
             case 0: std::cout << "Logging out...\n"; break;
             default: std::cout << "Invalid option.\n";
         }
@@ -282,7 +283,16 @@ void LibrarySystem::memberMenu(Member* mem) {
 
 void LibrarySystem::guestMenu() {
     std::cout << "\n--- Guest Menu ---\n";
-    searchBooks(); 
+	std::string input;
+    
+	while(true) {
+		searchBooks();
+		std::cout << "Search for another book? (y/n): ";
+		std::cin >> input;
+		if (input != "y" && input != "Y")
+			break;
+	}
+
     std::cout << "\nGuest access finished. Please register to borrow books.\n";
 }
 
@@ -312,11 +322,33 @@ void LibrarySystem::viewAllBooks() {
         return;
     }
     // Using new table format
-    printHeader();
-    for (const auto& b : books) {
-        printBookRow(b);
-    }
-    std::cout << std::string(110, '-') << "\n";
+    // printHeader();
+    // for (const auto& b : books) {
+    //     printBookRow(b);
+    // }
+    // std::cout << std::string(110, '-') << "\n";
+
+		std::cout << std::string(115, '-') << "\n";
+		std::cout << formatCell("ID", 8) << " | "
+		<< formatCell("Title", 30) << " | "
+		<< formatCell("Author", 20) << " | "
+		<< formatCell("Genre", 15) << " | "
+		<< formatCell("Due Date", 15) << " | "
+		<< "Borrower ID\n";
+		std::cout << std::string(115, '-') << "\n";
+		
+
+		for (const auto& b : books) {
+				std::string dateStr = formatDate(b.getDueDate());
+	
+				std::cout << formatCell(b.getId(), 8) << " | "
+						  << formatCell(b.getTitle(), 30) << " | "
+						  << formatCell(b.getAuthor(), 20) << " | "
+						  << formatCell(b.getGenre(), 15) << " | "
+						  << formatCell(dateStr, 15) << " | "
+						  << (b.getBorrowedById().empty() ? "N/A" : b.getBorrowedById()) << "\n";
+			}
+		std::cout << std::string(115, '-') << "\n";
 }
 
 void LibrarySystem::removeBook() {
@@ -490,12 +522,14 @@ void LibrarySystem::returnBook(Member* mem) {
     }
 
     // Display them nicely
-    std::cout << "Your Borrowed Books:\n";
-    printHeader();
-    for (Book* b : myBooks) {
-        printBookRow(*b);
-    }
-    std::cout << std::string(110, '-') << "\n";
+    // std::cout << "Your Borrowed Books:\n";
+    // printHeader();
+    // for (Book* b : myBooks) {
+    //     printBookRow(*b);
+    // }
+    // std::cout << std::string(110, '-') << "\n";
+
+	displayBorrowedBooks(mem);
 
     // Prompt
     std::string bookId;
@@ -534,32 +568,24 @@ void LibrarySystem::returnBook(Member* mem) {
     std::cout << "Book returned successfully.\n";
 }
 
-void LibrarySystem::displayBorrowedBooks() {
-    std::cout << "--- Currently Borrowed Books ---\n";
-    
-    std::cout << std::string(115, '-') << "\n";
-    std::cout << formatCell("ID", 8) << " | "
-              << formatCell("Title", 30) << " | "
-              << formatCell("Author", 20) << " | "
-              << formatCell("Genre", 15) << " | "
-              << formatCell("Due Date", 15) << " | "
-              << "Borrower ID\n";
-    std::cout << std::string(115, '-') << "\n";
+void LibrarySystem::displayBorrowedBooks(Member *mem) {
+		std::vector<Book*> myBooks;
+		for (auto& b : books) {
+			if (b.getBorrowedById() == mem->getId()) {
+				myBooks.push_back(&b);
+			}
+		}
 
-    bool any = false;
-    for (const auto& b : books) {
-        if (b.getIsBorrowed()) {
-            std::string dateStr = formatDate(b.getDueDate());
+		if (myBooks.empty()) {
+			std::cout << "You currently have no borrowed books.\n";
+			return;
+		}
 
-            std::cout << formatCell(b.getId(), 8) << " | "
-                      << formatCell(b.getTitle(), 30) << " | "
-                      << formatCell(b.getAuthor(), 20) << " | "
-                      << formatCell(b.getGenre(), 15) << " | "
-                      << formatCell(dateStr, 15) << " | "
-                      << b.getBorrowedById() << "\n";
-            any = true;
-        }
-    }
-    std::cout << std::string(115, '-') << "\n";
-    if(!any) std::cout << "No books are currently borrowed.\n";
+		// Display them nicely
+		std::cout << "Your Borrowed Books:\n";
+		printHeader();
+		for (Book* b : myBooks) {
+			printBookRow(*b);
+		}
+		std::cout << std::string(110, '-') << "\n";
 }

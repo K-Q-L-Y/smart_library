@@ -1,3 +1,4 @@
 1|Harry Potter|JK Rowling|Fiction|1|1768100000|1|
 2|Lord of the Rings|J.R.R. Tolkien|Fiction|1|1768846714|1|
 777|Microelectronics|cco|physics|1|1768958692|2|M001,23096663
+12345|Test Book|a random person|test genre|0|0||

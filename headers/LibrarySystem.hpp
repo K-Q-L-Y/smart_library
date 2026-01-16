@@ -40,7 +40,7 @@ public:
     void borrowBook(Member* mem);
     void returnBook(Member* mem);
     bool searchBooks();
-    void displayBorrowedBooks();
+    void displayBorrowedBooks(Member *mem = 0);
 };
 
 #endif
