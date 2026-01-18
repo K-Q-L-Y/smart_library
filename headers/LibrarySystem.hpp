@@ -33,10 +33,11 @@ public:
 
     // Core Features
     void addBook();
-    void viewAllBooks();
     void removeBook();
+    void displayAllBooks();
     void registerMember();
     void removeMember();
+	void displayAllUsers();
     void borrowBook(Member* mem);
     void returnBook(Member* mem);
     bool searchBooks();

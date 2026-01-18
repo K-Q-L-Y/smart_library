@@ -7,6 +7,7 @@ Person::Person(std::string id, std::string name, std::string email)
 
 std::string Person::getId() const { return id; }
 std::string Person::getName() const { return name; }
+std::string Person::getEmail() const { return email; }
 
 // --- Librarian ---
 Librarian::Librarian(std::string id, std::string name, std::string email) 

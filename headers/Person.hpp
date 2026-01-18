@@ -18,6 +18,7 @@ public:
 
     std::string getId() const;
     std::string getName() const;
+	std::string getEmail() const;
     
     // Pure virtual function for Polymorphism 
     virtual std::string getRole() const = 0; 

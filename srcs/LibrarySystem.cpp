@@ -245,7 +245,7 @@ void LibrarySystem::librarianMenu(Librarian* lib) {
     do {
         std::cout << "\n--- Librarian Menu (" << lib->getName() << ") ---\n";
         std::cout << "1. Add Book\n2. Remove Book\n3. Add User\n4. Remove User\n";
-        std::cout << "5. View All Books\n0. Logout\nChoice: ";
+        std::cout << "5. Display All Books\n6. Display All Users\n0. Logout\nChoice: ";
         
         choice = getValidInt();
 
@@ -254,7 +254,8 @@ void LibrarySystem::librarianMenu(Librarian* lib) {
             case 2: removeBook(); break;
             case 3: registerMember(); break; 
             case 4: removeMember(); break;
-            case 5: viewAllBooks(); break;
+            case 5: displayAllBooks(); break;
+			case 6: displayAllUsers(); break;
             case 0: std::cout << "Logging out...\n"; break;
             default: std::cout << "Invalid option.\n";
         }
@@ -316,7 +317,26 @@ void LibrarySystem::addBook() {
     std::cout << "Book added successfully.\n";
 }
 
-void LibrarySystem::viewAllBooks() {
+void LibrarySystem::removeBook() {
+    std::string id;
+    std::cout << "Enter Book ID to remove: "; 
+    std::cin >> id; 
+    
+    // CHANGED: List-specific erasure
+    bool found = false;
+    for (auto it = books.begin(); it != books.end(); ++it) {
+        if (it->getId() == id) {
+            books.erase(it);
+            found = true;
+            std::cout << "Book removed.\n";
+            break; 
+        }
+    }
+    
+    if (!found) std::cout << "Book not found.\n";
+}
+
+void LibrarySystem::displayAllBooks() {
     if(books.empty()) {
         std::cout << "No books in library.\n";
         return;
@@ -349,25 +369,6 @@ void LibrarySystem::viewAllBooks() {
 						  << (b.getBorrowedById().empty() ? "N/A" : b.getBorrowedById()) << "\n";
 			}
 		std::cout << std::string(115, '-') << "\n";
-}
-
-void LibrarySystem::removeBook() {
-    std::string id;
-    std::cout << "Enter Book ID to remove: "; 
-    std::cin >> id; 
-    
-    // CHANGED: List-specific erasure
-    bool found = false;
-    for (auto it = books.begin(); it != books.end(); ++it) {
-        if (it->getId() == id) {
-            books.erase(it);
-            found = true;
-            std::cout << "Book removed.\n";
-            break; 
-        }
-    }
-    
-    if (!found) std::cout << "Book not found.\n";
 }
 
 void LibrarySystem::registerMember() {
@@ -423,6 +424,24 @@ void LibrarySystem::removeMember() {
     }
 
     if (!found) std::cout << "User not found.\n";
+}
+
+void LibrarySystem::displayAllUsers() {
+    std::cout << "--- Registered Users ---\n";
+    std::cout << std::string(90, '-') << "\n";
+    std::cout << formatCell("ID", 10) << " | "
+              << formatCell("Name", 30) << " | "
+              << formatCell("Email", 30) << " | "
+              << "Role\n";
+    std::cout << std::string(90, '-') << "\n";
+
+    for (const auto& user : users) {
+        std::cout << formatCell(user->getId(), 10) << " | "
+                  << formatCell(user->getName(), 30) << " | "
+                  << formatCell(user->getEmail(), 30) << " | "
+                  << user->getRole() << "\n";
+    }
+    std::cout << std::string(90, '-') << "\n";
 }
 
 bool LibrarySystem::searchBooks() {
