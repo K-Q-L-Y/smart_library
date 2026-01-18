@@ -10,7 +10,9 @@ class LibrarySystem {
 private:
     std::list<Book> books;
     std::list<Person*> users;
-    const std::string bookFile = "data/books.txt"; // location of book/user data is stored
+
+	// filepath for data
+    const std::string bookFile = "data/books.txt";
     const std::string userFile = "data/users.txt";
 
     // Helpers
