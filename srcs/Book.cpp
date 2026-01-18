@@ -24,7 +24,6 @@ void Book::borrowBook(std::string memberId, int daysToBorrow, time_t due) {
 		dueDate = due;
 	else
 	    dueDate = time(0) + (daysToBorrow * 24 * 60 * 60);
-	std::cout << "dueDate: " << dueDate << std::endl;
 }
 
 void Book::returnBook() {

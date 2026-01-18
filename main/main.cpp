@@ -2,6 +2,7 @@
 #include <iostream>
 
 int main() {
+	std::system("clear");
     LibrarySystem app;
     
     while (app.run());
