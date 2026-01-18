@@ -5,7 +5,7 @@
 #include <iostream>
 #include <list>
 
-// Base Class [cite: 8]
+// Base Class
 class Person {
 protected:
     std::string id;
@@ -20,12 +20,11 @@ public:
     std::string getName() const;
 	std::string getEmail() const;
     
-    // Pure virtual function for Polymorphism 
     virtual std::string getRole() const = 0; 
     virtual std::string toFileString() const = 0;
 };
 
-// Derived Class: Librarian [cite: 12]
+// Derived Class: Librarian
 class Librarian : public Person {
 public:
     Librarian(std::string id, std::string name, std::string email);
@@ -33,10 +32,9 @@ public:
     std::string toFileString() const override;
 };
 
-// Derived Class: Member [cite: 14]
+// Derived Class: Member
 class Member : public Person {
 private:
-    // STL Linked List for borrowing history 
     std::list<std::string> borrowingHistory; 
 
 public:
@@ -47,11 +45,10 @@ public:
     void displayHistory() const;
     std::string toFileString() const override;
     
-    // Helper to load history from file
     void loadHistory(const std::string& historyStr);
 };
 
-// Derived Class: Guest [cite: 17]
+// Derived Class: Guest
 class Guest : public Person {
 public:
     Guest();
