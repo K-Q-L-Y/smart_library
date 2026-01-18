@@ -9,8 +9,8 @@
 class LibrarySystem {
 private:
     std::list<Book> books;
-    std::list<Person*> users; // Polymorphic container 
-    const std::string bookFile = "data/books.txt";
+    std::list<Person*> users;
+    const std::string bookFile = "data/books.txt"; // location of book/user data is stored
     const std::string userFile = "data/users.txt";
 
     // Helpers
@@ -20,12 +20,12 @@ private:
 
 public:
     LibrarySystem();
-    ~LibrarySystem(); // Destructor to clean up pointers
+    ~LibrarySystem();
 
-    void loadData(); // 
-    void saveData(); // 
+    void loadData(); 
+    void saveData();
 
-    // Menu Operations [cite: 23]
+    // Menu Operations
     bool run();
     void librarianMenu(Librarian* lib);
     void memberMenu(Member* mem);
@@ -35,8 +35,8 @@ public:
     void addBook();
     void removeBook();
     void displayAllBooks();
-    void registerMember();
-    void removeMember();
+    void registerUser();
+    void removeUser();
 	void displayAllUsers();
     void borrowBook(Member* mem);
     void returnBook(Member* mem);

@@ -54,14 +54,12 @@ std::string Book::toString() const {
        << " | Status: " << (isBorrowed ? "Borrowed" : "Available");
     
     if (isBorrowed) {
-        // FIX: Use standard ctime() instead of ctime_s()
         char* dt = ctime(&dueDate); 
         std::string dateStr = dt ? dt : "Unknown";
         
-        // ctime returns a string with a newline at the end; remove it for clean formatting
-        if (!dateStr.empty() && dateStr.back() == '\n') {
+		// remove newline
+        if (!dateStr.empty() && dateStr.back() == '\n')
             dateStr.pop_back();
-        }
         
         ss << " | Due: " << dateStr;
     }

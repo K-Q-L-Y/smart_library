@@ -5,10 +5,10 @@
 #include <algorithm>
 #include <limits> 
 #include <cctype> 
-#include <iomanip> // Required for formatting
-#include <ctime>   // Required for strftime and localtime
+#include <iomanip>
+#include <ctime>
 
-// --- Helper for Robust Input ---
+/* HELPERS */
 int getValidInt() {
     int choice;
     while (true) {
@@ -23,15 +23,13 @@ int getValidInt() {
     }
 }
 
-// --- Helper for Case-Insensitive Search ---
 std::string toLower(const std::string& str) {
     std::string lowerStr = str;
     std::transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), tolower);
     return lowerStr;
 }
 
-// --- FORMATTING HELPERS ---
-
+/* FORMATTING */
 // Truncates text with "..." if too long, or adds spaces if too short
 std::string formatCell(std::string text, size_t width) {
     if (text.length() > width) {
@@ -40,7 +38,7 @@ std::string formatCell(std::string text, size_t width) {
     return text + std::string(width - text.length(), ' ');
 }
 
-// Helper to format time_t to "Dec 27 2025"
+// Format time_t to string "Jan 1 2025"
 std::string formatDate(time_t t) {
     struct tm* timeInfo = localtime(&t);
     if (!timeInfo) return "Unknown"; // Safety check
@@ -51,6 +49,7 @@ std::string formatDate(time_t t) {
     return std::string(buffer);
 }
 
+// Header for listing books
 void printHeader() {
     std::cout << std::string(110, '-') << "\n";
     std::cout << formatCell("ID", 8) << " | "
@@ -62,6 +61,7 @@ void printHeader() {
     std::cout << std::string(110, '-') << "\n";
 }
 
+// Print books
 void printBookRow(const Book& b) {
     std::string status = b.getIsBorrowed() ? "Borrowed" : "Available";
     std::string dueDateStr = "-";
@@ -78,7 +78,7 @@ void printBookRow(const Book& b) {
               << dueDateStr << "\n";
 }
 
-// ---------------------------
+/* Constructor and Destructor */
 
 LibrarySystem::LibrarySystem() {
     loadData();
@@ -92,7 +92,7 @@ LibrarySystem::~LibrarySystem() {
     users.clear();
 }
 
-// --- File Persistence ---
+/* File Persistence */
 void LibrarySystem::saveData() {
     std::ofstream bOut(bookFile);
     for (const auto& book : books) {
@@ -165,7 +165,7 @@ void LibrarySystem::loadData() {
     }
 }
 
-// --- Helpers ---
+/* Additional helpers */
 Person* LibrarySystem::findUser(std::string id) {
     for (auto user : users) {
         if (user->getId() == id) return user;
@@ -192,7 +192,7 @@ void LibrarySystem::calculateFine(time_t dueDate) {
     }
 }
 
-// --- Menus ---
+/* Menus */
 bool LibrarySystem::run() {
     std::cout << "\n=======================================\n";
     std::cout << "   SMART LIBRARY MANAGEMENT SYSTEM     \n";
@@ -252,8 +252,8 @@ void LibrarySystem::librarianMenu(Librarian* lib) {
         switch (choice) {
             case 1: addBook(); break;
             case 2: removeBook(); break;
-            case 3: registerMember(); break; 
-            case 4: removeMember(); break;
+            case 3: registerUser(); break; 
+            case 4: removeUser(); break;
             case 5: displayAllBooks(); break;
 			case 6: displayAllUsers(); break;
             case 0: std::cout << "Logging out...\n"; break;
@@ -297,8 +297,7 @@ void LibrarySystem::guestMenu() {
     std::cout << "\nGuest access finished. Please register to borrow books.\n";
 }
 
-// --- Core Functionalities ---
-
+/* Core Functionalities */
 void LibrarySystem::addBook() {
     std::string id, title, author, genre;
     
@@ -322,7 +321,6 @@ void LibrarySystem::removeBook() {
     std::cout << "Enter Book ID to remove: "; 
     std::cin >> id; 
     
-    // CHANGED: List-specific erasure
     bool found = false;
     for (auto it = books.begin(); it != books.end(); ++it) {
         if (it->getId() == id) {
@@ -341,38 +339,31 @@ void LibrarySystem::displayAllBooks() {
         std::cout << "No books in library.\n";
         return;
     }
-    // Using new table format
-    // printHeader();
-    // for (const auto& b : books) {
-    //     printBookRow(b);
-    // }
-    // std::cout << std::string(110, '-') << "\n";
 
-		std::cout << std::string(115, '-') << "\n";
-		std::cout << formatCell("ID", 8) << " | "
-		<< formatCell("Title", 30) << " | "
-		<< formatCell("Author", 20) << " | "
-		<< formatCell("Genre", 15) << " | "
-		<< formatCell("Due Date", 15) << " | "
-		<< "Borrower ID\n";
-		std::cout << std::string(115, '-') << "\n";
-		
+	std::cout << std::string(115, '-') << "\n";
+	std::cout << formatCell("ID", 8) << " | "
+	<< formatCell("Title", 30) << " | "
+	<< formatCell("Author", 20) << " | "
+	<< formatCell("Genre", 15) << " | "
+	<< formatCell("Due Date", 15) << " | "
+	<< "Borrower ID\n";
+	std::cout << std::string(115, '-') << "\n";
 
-		for (const auto& b : books) {
-				std::string dateStr = formatDate(b.getDueDate());
-	
-				std::cout << formatCell(b.getId(), 8) << " | "
-						  << formatCell(b.getTitle(), 30) << " | "
-						  << formatCell(b.getAuthor(), 20) << " | "
-						  << formatCell(b.getGenre(), 15) << " | "
-						  << formatCell(dateStr, 15) << " | "
-						  << (b.getBorrowedById().empty() ? "N/A" : b.getBorrowedById()) << "\n";
-			}
-		std::cout << std::string(115, '-') << "\n";
+	for (const auto& b : books) {
+			std::string dateStr = formatDate(b.getDueDate());
+
+			std::cout << formatCell(b.getId(), 8) << " | "
+						<< formatCell(b.getTitle(), 30) << " | "
+						<< formatCell(b.getAuthor(), 20) << " | "
+						<< formatCell(b.getGenre(), 15) << " | "
+						<< formatCell(dateStr, 15) << " | "
+						<< (b.getBorrowedById().empty() ? "N/A" : b.getBorrowedById()) << "\n";
+		}
+	std::cout << std::string(115, '-') << "\n";
 }
 
-void LibrarySystem::registerMember() {
-    std::cout << "Register New Account:\n1. Library Member\n2. Librarian (Staff)\nChoice: ";
+void LibrarySystem::registerUser() {
+    std::cout << "Register New Account:\n1. Member\n2. Librarian\nChoice: ";
     int type = getValidInt();
     
     if (type != 1 && type != 2) {
@@ -402,7 +393,7 @@ void LibrarySystem::registerMember() {
     }
 }
 
-void LibrarySystem::removeMember() {
+void LibrarySystem::removeUser() {
     std::string id;
     std::cout << "Enter User ID to remove: "; std::cin >> id;
     
@@ -411,7 +402,6 @@ void LibrarySystem::removeMember() {
         return;
     }
 
-    // CHANGED: List-specific erasure
     bool found = false;
     for (auto it = users.begin(); it != users.end(); ++it) {
         if ((*it)->getId() == id) {
@@ -509,14 +499,6 @@ void LibrarySystem::borrowBook(Member* mem) {
             std::cout << "You have been added to the reservation queue.\n";
         }
     }
-	// else { // todo: can remove this, add to returnbook so that when return can process
-    //     if (book->hasReservations()) {
-    //         std::string nextUser = book->processNextReservation();
-    //         if (nextUser != mem->getId()) {
-    //             std::cout << "This book is reserved for user: " << nextUser << ". You cannot borrow it yet.\n";
-    //             return; 
-    //         }
-    //     }
     else {
         book->borrowBook(mem->getId(), 7); 
         mem->addToHistory(book->getTitle() + " (Borrowed)"); 
@@ -539,14 +521,6 @@ void LibrarySystem::returnBook(Member* mem) {
         std::cout << "You currently have no borrowed books to return.\n";
         return;
     }
-
-    // Display them nicely
-    // std::cout << "Your Borrowed Books:\n";
-    // printHeader();
-    // for (Book* b : myBooks) {
-    //     printBookRow(*b);
-    // }
-    // std::cout << std::string(110, '-') << "\n";
 
 	displayBorrowedBooks(mem);
 
@@ -574,7 +548,7 @@ void LibrarySystem::returnBook(Member* mem) {
 
     calculateFine(book->getDueDate());
 
-	// settle reservations
+	// Give book to reserved person
 	if (book->hasReservations()) {
 		std::string nextUser = book->processNextReservation();
 		Member *tmp = dynamic_cast<Member*>(findUser(nextUser));
@@ -583,6 +557,7 @@ void LibrarySystem::returnBook(Member* mem) {
 	}
 	else
 	    book->returnBook();
+
     mem->addToHistory(book->getTitle() + " (Returned)");
     std::cout << "Book returned successfully.\n";
 }
@@ -600,7 +575,6 @@ void LibrarySystem::displayBorrowedBooks(Member *mem) {
 			return;
 		}
 
-		// Display them nicely
 		std::cout << "Your Borrowed Books:\n";
 		printHeader();
 		for (Book* b : myBooks) {

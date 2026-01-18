@@ -5,4 +5,4 @@ Member|1|Member A|a@gmail.com|Harry Potter (Borrowed),Harry Potter (Borrowed),Ha
 Member|2|Member B|b@gmail.com|Harry Potter (Borrowed),Harry Potter (Returned),Microelectronics (Borrowed)
 Member|3|Member C|c@gmail.com|
 Member|4|Member D|d@gmail.com|
-Member|M001|JOHN|JOHN|
+Member|M001|JOHN|JOHN@gmail.com|
