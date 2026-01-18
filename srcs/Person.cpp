@@ -30,6 +30,7 @@ void Member::addToHistory(std::string bookTitle) {
 }
 
 void Member::displayHistory() const {
+	std::system("clear");
     std::cout << "Borrowing History for " << name << ":\n";
     if (borrowingHistory.empty()) {
         std::cout << " - No history available.\n";
@@ -38,6 +39,7 @@ void Member::displayHistory() const {
     for (const auto& entry : borrowingHistory) {
         std::cout << " - " << entry << "\n";
     }
+	std::cout << "\n";
 }
 
 std::string Member::toFileString() const {

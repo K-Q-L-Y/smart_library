@@ -199,7 +199,7 @@ bool LibrarySystem::run() {
 	std::cout << "Login as: \n";
     std::cout << "1. Librarian\n";
     std::cout << "2. Member\n";
-    std::cout << "3. Continue as Guest\n";
+    std::cout << "3. Guest (Seach only)\n";
     std::cout << "0. Exit Program\n";
     std::cout << "---------------------------------------\n";
     std::cout << "Choice: ";
@@ -214,17 +214,18 @@ bool LibrarySystem::run() {
     }
 
     if (choice != 1 && choice != 2) {
-        std::cout << "Invalid choice.\n";
+        std::cout << "Invalid choice.\n\n";
         return true; 
     }
 
+	std::cout << "Logging in as: " << ((choice == 1) ? "Librarian\n" : "Member\n");
     std::string id;
     std::cout << "Enter User ID: ";
     std::cin >> id;
 
     Person* user = findUser(id);
     if (!user) {
-        std::cout << "[Error] Invalid ID. (Hint: Try 'admin' if first run)\n";
+        std::cout << "[Error] Invalid ID. (Hint: Try 'admin' if first run)\n\n";
         return true; 
     }
 
@@ -233,7 +234,7 @@ bool LibrarySystem::run() {
     } else if (choice == 2 && dynamic_cast<Member*>(user)) {
         memberMenu(dynamic_cast<Member*>(user));
     } else {
-        std::cout << "[Error] Access Denied or Wrong Role.\n";
+        std::cout << "[Error] Access Denied or Wrong Role.\n\n";
     }
 
     return true; 
@@ -244,20 +245,24 @@ void LibrarySystem::librarianMenu(Librarian* lib) {
     int choice;
     do {
         std::cout << "--- Librarian Menu (" << lib->getName() << ") ---\n";
-        std::cout << "1. Add Book\n2. Remove Book\n3. Add User\n4. Remove User\n";
-        std::cout << "5. Display All Books\n6. Display All Users\n0. Logout\nChoice: ";
+        std::cout << "1. Add Book\t\t4. Add User\t\t0. Logout\n";
+		std::cout << "2. Remove Book\t\t5. Remove User\n";
+		std::cout << "3. Display all books\t6. Display all users\nChoice: ";
+
+		// std::cout << "1. Add Book\n2. Remove Book\n3. Add User\n4. Remove User\n";
+        // std::cout << "5. Display All Books\n6. Display All Users\n0. Logout\nChoice: ";
         
         choice = getValidInt();
 
         switch (choice) {
             case 1: addBook(); break;
             case 2: removeBook(); break;
-            case 3: registerUser(); break; 
-            case 4: removeUser(); break;
-            case 5: displayAllBooks(); break;
+            case 3: displayAllBooks(); break;
+            case 4: registerUser(); break; 
+            case 5: removeUser(); break;
 			case 6: displayAllUsers(); break;
-            case 0: std::cout << "Logging out...\n"; break;
-            default: std::cout << "Invalid option.\n";
+            case 0: std::cout << "Logging out...\n\n"; break;
+            default: std::cout << "Invalid option.\n\n";
         }
     } while (choice != 0);
 }
@@ -345,6 +350,7 @@ void LibrarySystem::removeBook() {
 
 void LibrarySystem::displayAllBooks() {
 	std::system("clear");
+	std::cout << "--- Registered Books ---\n";
     if(books.empty()) {
         std::cout << "No books in library.\n";
         return;
@@ -590,7 +596,7 @@ void LibrarySystem::displayBorrowedBooks(Member *mem) {
 	}
 
 	if (myBooks.empty()) {
-		std::cout << "You currently have no borrowed books.\n";
+		std::cout << "You currently have no borrowed books.\n\n";
 		return;
 	}
 
@@ -599,5 +605,5 @@ void LibrarySystem::displayBorrowedBooks(Member *mem) {
 	for (Book* b : myBooks) {
 		printBookRow(*b);
 	}
-	std::cout << std::string(110, '-') << "\n";
+	std::cout << std::string(110, '-') << "\n\n";
 }
