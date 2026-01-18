@@ -61,6 +61,12 @@ void printHeader() {
     std::cout << std::string(110, '-') << "\n";
 }
 
+void printTitle() {
+    std::cout << "=======================================\n";
+    std::cout << "   SMART LIBRARY MANAGEMENT SYSTEM     \n";
+    std::cout << "=======================================\n";
+}
+
 // Print books
 void printBookRow(const Book& b) {
     std::string status = b.getIsBorrowed() ? "Borrowed" : "Available";
@@ -193,9 +199,7 @@ void LibrarySystem::calculateFine(time_t dueDate) {
 
 /* Menus */
 bool LibrarySystem::run() {
-    std::cout << "=======================================\n";
-    std::cout << "   SMART LIBRARY MANAGEMENT SYSTEM     \n";
-    std::cout << "=======================================\n";
+    printTitle();
 	std::cout << "Login as: \n";
     std::cout << "1. Librarian\n";
     std::cout << "2. Member\n";
@@ -242,15 +246,13 @@ bool LibrarySystem::run() {
 
 void LibrarySystem::librarianMenu(Librarian* lib) {
 	std::system("clear");
+	printTitle();
     int choice;
     do {
         std::cout << "--- Librarian Menu (" << lib->getName() << ") ---\n";
         std::cout << "1. Add Book\t\t4. Add User\t\t0. Logout\n";
 		std::cout << "2. Remove Book\t\t5. Remove User\n";
 		std::cout << "3. Display all books\t6. Display all users\nChoice: ";
-
-		// std::cout << "1. Add Book\n2. Remove Book\n3. Add User\n4. Remove User\n";
-        // std::cout << "5. Display All Books\n6. Display All Users\n0. Logout\nChoice: ";
         
         choice = getValidInt();
 
@@ -268,6 +270,8 @@ void LibrarySystem::librarianMenu(Librarian* lib) {
 }
 
 void LibrarySystem::memberMenu(Member* mem) {
+	system("clear");
+	printTitle();
     int choice;
     do {
         std::cout << "--- Member Menu (" << mem->getName() << ") ---\n";
@@ -288,6 +292,8 @@ void LibrarySystem::memberMenu(Member* mem) {
 }
 
 void LibrarySystem::guestMenu() {
+	std::system("clear");
+	printTitle();
     std::cout << "--- Guest Menu ---\n";
 	std::string input;
     
@@ -305,6 +311,7 @@ void LibrarySystem::guestMenu() {
 /* Core Functionalities */
 void LibrarySystem::addBook() {
 	std::system("clear");
+	printTitle();
     std::string id, title, author, genre;
     
 	int tmp_id = 1;
@@ -329,6 +336,7 @@ void LibrarySystem::addBook() {
 
 void LibrarySystem::removeBook() {
 	std::system("clear");
+	printTitle();
 	displayAllBooks();
 
     std::string id;
@@ -350,6 +358,7 @@ void LibrarySystem::removeBook() {
 
 void LibrarySystem::displayAllBooks() {
 	std::system("clear");
+	printTitle();
 	std::cout << "--- Registered Books ---\n";
     if(books.empty()) {
         std::cout << "No books in library.\n";
@@ -380,6 +389,7 @@ void LibrarySystem::displayAllBooks() {
 
 void LibrarySystem::registerUser() {
 	std::system("clear");
+	printTitle();
     std::cout << "Register New Account:\n1. Member\n2. Librarian\nChoice: ";
     int type = getValidInt();
     
@@ -412,6 +422,7 @@ void LibrarySystem::registerUser() {
 
 void LibrarySystem::removeUser() {
 	std::system("clear");
+	printTitle();
 
 	displayAllUsers();
     std::string id;
@@ -438,6 +449,7 @@ void LibrarySystem::removeUser() {
 
 void LibrarySystem::displayAllUsers() {
 	std::system("clear");
+	printTitle();
     std::cout << "--- Registered Users ---\n";
     std::cout << std::string(90, '-') << "\n";
     std::cout << formatCell("ID", 10) << " | "
@@ -457,6 +469,7 @@ void LibrarySystem::displayAllUsers() {
 
 bool LibrarySystem::searchBooks() {
 	std::system("clear");
+	printTitle();
     std::string query;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     
@@ -490,6 +503,7 @@ bool LibrarySystem::searchBooks() {
 
 void LibrarySystem::borrowBook(Member* mem) {
 	std::system("clear");
+	printTitle();
     std::cout << "\n--- Find a Book to Borrow ---\n";
     
     if (!searchBooks()) return;
@@ -531,6 +545,7 @@ void LibrarySystem::borrowBook(Member* mem) {
 
 void LibrarySystem::returnBook(Member* mem) {
 	std::system("clear");
+	printTitle();
     std::cout << "\n--- Return a Book ---\n";
 
     // Filter books borrowed by this specific member
@@ -588,6 +603,7 @@ void LibrarySystem::returnBook(Member* mem) {
 
 void LibrarySystem::displayBorrowedBooks(Member *mem) {
 	std::system("clear");
+	printTitle();
 	std::vector<Book*> myBooks;
 	for (auto& b : books) {
 		if (b.getBorrowedById() == mem->getId()) {
