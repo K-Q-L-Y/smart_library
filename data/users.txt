@@ -1,8 +1,8 @@
 Librarian|admin|Admin|admin@library.com
 Member|23096663|Seng Khye|sengkhye@gmail.com|
 Librarian|1234|Chin Yen|cy@gmail.com
-Member|1|Member A|a@gmail.com|1768847373
-Member|2|Member B|b@gmail.com|1768847362
-Member|3|Member C|c@gmail.com|
+Member|1|Member A|a@gmail.com|
+Member|2|Member B|b@gmail.com|
+Member|3|Member C|c@gmail.com|1768850057|Borrowed|Harry Potter and the Deathly Hallows,1768850067|Borrowed|Harry Potter and the Half-Blood Prince
 Member|4|Member D|d@gmail.com|
 Member|M001|JOHN|JOHN@gmail.com|

@@ -156,7 +156,7 @@ void LibrarySystem::loadData() {
             users.push_back(new Librarian(id, name, email));
         } else if (type == "Member") {
             Member* m = new Member(id, name, email);
-            if (std::getline(ss, history, '|')) {
+            if (std::getline(ss, history)) {
                 m->loadHistory(history);
             }
             users.push_back(m);
