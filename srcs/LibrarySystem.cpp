@@ -49,6 +49,12 @@ std::string formatDate(time_t t) {
     return std::string(buffer);
 }
 
+void printTitle() {
+    std::cout << "=======================================\n";
+    std::cout << "   SMART LIBRARY MANAGEMENT SYSTEM     \n";
+    std::cout << "=======================================\n";
+}
+
 // Header for listing books
 void printHeader() {
     std::cout << std::string(110, '-') << "\n";
@@ -59,12 +65,6 @@ void printHeader() {
               << formatCell("Status", 10) << " | "
               << "Due Date\n";
     std::cout << std::string(110, '-') << "\n";
-}
-
-void printTitle() {
-    std::cout << "=======================================\n";
-    std::cout << "   SMART LIBRARY MANAGEMENT SYSTEM     \n";
-    std::cout << "=======================================\n";
 }
 
 // Print books
