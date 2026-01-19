@@ -127,7 +127,8 @@ void LibrarySystem::loadData() {
             seglist.push_back(segment);
         }
         if (seglist.size() >= 7) {
-            Book b(seglist[0], seglist[1], seglist[2], seglist[3], static_cast<time_t>(std::stoll(seglist[5])));
+            Book b(seglist[0], seglist[1], seglist[2], seglist[3], \
+				static_cast<time_t>(std::stoll(seglist[5])));
 			bool borrowed = (seglist[4] == "1");
             std::string borrower = seglist[6];
             
