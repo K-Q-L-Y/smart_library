@@ -274,7 +274,8 @@ void LibrarySystem::memberMenu(Member* mem) {
     int choice;
     do {
         std::cout << "--- Member Menu (" << mem->getName() << ") ---\n";
-        std::cout << "1. Search Books\n2. Borrow Book\n3. Return Book\n4. View Borrowed Books\n5. View History\n0. Logout\nChoice: ";
+        std::cout << "1. Search Books\n2. Borrow Book\n3. Return Book\n";
+		std::cout << "4. View Borrowed Books\n5. View History\n0. Logout\nChoice: ";
         
         choice = getValidInt();
 
@@ -549,20 +550,16 @@ void LibrarySystem::returnBook(Member* mem) {
 
     // Filter books borrowed by this specific member
     std::vector<Book*> myBooks;
-    for (auto& b : books) {
-        if (b.getBorrowedById() == mem->getId()) {
+    for (auto& b : books)
+        if (b.getBorrowedById() == mem->getId())
             myBooks.push_back(&b);
-        }
-    }
 
     if (myBooks.empty()) {
         std::cout << "You currently have no borrowed books to return.\n";
         return;
     }
-
 	displayBorrowedBooks(mem);
 
-    // Prompt
     std::string bookId;
     std::cout << "Enter Book ID to return (or enter '0' to cancel): "; 
     std::cin >> bookId;
@@ -583,7 +580,6 @@ void LibrarySystem::returnBook(Member* mem) {
         std::cout << "[Error] You did not borrow this book (ID: " << bookId << ").\n"; 
         return;
     }
-
     calculateFine(book->getDueDate());
 
 	// Give book to reserved person

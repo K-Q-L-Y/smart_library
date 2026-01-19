@@ -1,6 +1,10 @@
-1|Harry Potter|JK Rowling|Fiction|0|1768100000||
-2|Lord of the Rings|J.R.R. Tolkien|Fiction|0|1768846714||
-3|Microelectronics|Sedra Smith|physics|0|1769360123||
-4|Test Book|test author|test genre|0|0||
-5|percy jackson|Rick Riordan|fiction, gods|1|1769440295||
-6|this is a very long book title just because i can make it this long|the author also has a very long name|this book has so many genres it cannot physically be listed down one by one|0|1768754133||
+1|Harry Potter and the Philosopher's Stone|JK Rowling|Fiction|1|1769252173|1|
+2|Harry Potter and the Chamber of Secrets|JK Rowling|Fiction|0|1768100000||
+3|Harry Potter and the Prisoner of Azkaban|JK Rowling|Fiction|1|1769452162|2|
+4|Harry Potter and the Goblet of Fire|JK Rowling|Fiction|0|1768100000||
+5|Harry Potter and the Order of the Phoenix|JK Rowling|Fiction|0|1768100000||
+6|Harry Potter and the Half-Blood Prince|JK Rowling|Fiction|0|1768100000||
+7|Harry Potter and the Deathly Hallows|JK Rowling|Fiction|0|1768100000||
+8|Lord of the Rings|J.R.R. Tolkien|Fiction|0|1768846714||
+9|Microelectronics|Sedra Smith|physics|0|1769360123||
+11|Percy Jackson|Rick Riordan|fiction, gods|0|1769440295||
