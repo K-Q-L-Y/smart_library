@@ -284,7 +284,7 @@ void LibrarySystem::memberMenu(Member* mem) {
             case 2: borrowBook(mem); break;
             case 3: returnBook(mem); break;
 			case 4: displayBorrowedBooks(mem); break;
-            case 5: mem->displayHistory(); break;
+            case 5: displayHistory(mem); break;
             case 0: std::cout << "Logging out...\n\n"; break;
             default: std::cout << "Invalid option.\n\n";
         }
@@ -617,4 +617,45 @@ void LibrarySystem::displayBorrowedBooks(Member *mem) {
 		printBookRow(*b);
 	}
 	std::cout << std::string(110, '-') << "\n\n";
+}
+
+void LibrarySystem::displayHistory(Member *mem) {
+	std::system("clear");
+    std::cout << "=======================================\n";
+    std::cout << "   SMART LIBRARY MANAGEMENT SYSTEM     \n";
+    std::cout << "=======================================\n";
+
+    std::cout << "History for " << mem->getName() << ":\n";
+    if (mem->getHistory().empty()) {
+        std::cout << " - No history available.\n\n";
+        return;
+    }
+
+    std::cout << std::string(60, '-') << "\n";
+    std::cout << formatCell("Date", 15) << " | "
+              << formatCell("Action", 10) << " | "
+              << "Book Title\n";
+    std::cout << std::string(60, '-') << "\n";
+
+    for (const auto& entry : mem->getHistory()) {
+        std::stringstream ss(entry);
+        std::string segment;
+        std::vector<std::string> parts;
+        
+        // Parse "Timestamp|Action|Title"
+        while(std::getline(ss, segment, '|')) {
+            parts.push_back(segment);
+        }
+
+        if (parts.size() >= 3) {
+            std::string dateStr = formatDate(std::stoll(parts[0]));
+            std::cout << formatCell(dateStr, 15) << " | "
+                      << formatCell(parts[1], 10) << " | "
+                      << parts[2] << "\n";
+        } else {
+            // Fallback for old data format
+            std::cout << entry << "\n"; 
+        }
+    }
+    std::cout << std::string(60, '-') << "\n\n";
 }

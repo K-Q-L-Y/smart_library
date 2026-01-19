@@ -3,7 +3,7 @@
 3|Harry Potter and the Prisoner of Azkaban|JK Rowling|Fiction|1|1769452162|2|
 4|Harry Potter and the Goblet of Fire|JK Rowling|Fiction|0|1768100000||
 5|Harry Potter and the Order of the Phoenix|JK Rowling|Fiction|0|1768100000||
-6|Harry Potter and the Half-Blood Prince|JK Rowling|Fiction|1|1769454867|3|
+6|Harry Potter and the Half-Blood Prince|JK Rowling|Fiction|0|0||
 7|Harry Potter and the Deathly Hallows|JK Rowling|Fiction|1|1769454857|3|
 8|Lord of the Rings|J.R.R. Tolkien|Fiction|0|1768846714||
 9|Microelectronics|Sedra Smith|physics|0|1769360123||

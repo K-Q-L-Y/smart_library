@@ -25,52 +25,12 @@ Member::Member(std::string id, std::string name, std::string email)
     : Person(id, name, email) {}
 
 std::string Member::getRole() const { return "Member"; }
+std::list<std::string> Member::getHistory() const { return borrowingHistory; };
 
 void Member::addToHistory(std::string bookTitle, std::string action) {
     std::stringstream ss;
     ss << time(0) << "|" << action << "|" << bookTitle;
     borrowingHistory.push_back(ss.str());
-}
-
-void Member::displayHistory() const {
-	std::system("clear");
-    std::cout << "=======================================\n";
-    std::cout << "   SMART LIBRARY MANAGEMENT SYSTEM     \n";
-    std::cout << "=======================================\n";
-
-    std::cout << "History for " << name << ":\n";
-    if (borrowingHistory.empty()) {
-        std::cout << " - No history available.\n\n";
-        return;
-    }
-
-    std::cout << std::string(60, '-') << "\n";
-    std::cout << formatCellP("Date", 15) << " | "
-              << formatCellP("Action", 10) << " | "
-              << "Book Title\n";
-    std::cout << std::string(60, '-') << "\n";
-
-    for (const auto& entry : borrowingHistory) {
-        std::stringstream ss(entry);
-        std::string segment;
-        std::vector<std::string> parts;
-        
-        // Parse "Timestamp|Action|Title"
-        while(std::getline(ss, segment, '|')) {
-            parts.push_back(segment);
-        }
-
-        if (parts.size() >= 3) {
-            std::string dateStr = formatDateP(std::stoll(parts[0]));
-            std::cout << formatCellP(dateStr, 15) << " | "
-                      << formatCellP(parts[1], 10) << " | "
-                      << parts[2] << "\n";
-        } else {
-            // Fallback for old data format
-            std::cout << entry << "\n"; 
-        }
-    }
-    std::cout << std::string(60, '-') << "\n\n";
 }
 
 std::string Member::toFileString() const {
