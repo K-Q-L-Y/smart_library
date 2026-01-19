@@ -285,8 +285,8 @@ void LibrarySystem::memberMenu(Member* mem) {
             case 3: returnBook(mem); break;
 			case 4: displayBorrowedBooks(mem); break;
             case 5: mem->displayHistory(); break;
-            case 0: std::cout << "Logging out...\n"; break;
-            default: std::cout << "Invalid option.\n";
+            case 0: std::cout << "Logging out...\n\n"; break;
+            default: std::cout << "Invalid option.\n\n";
         }
     } while (choice != 0);
 }
@@ -305,7 +305,7 @@ void LibrarySystem::guestMenu() {
 			break;
 	}
 
-    std::cout << "\nGuest access finished. Please register to borrow books.\n";
+    std::cout << "\nGuest access finished. Please register to borrow books.\n\n";
 }
 
 /* Core Functionalities */
@@ -538,7 +538,7 @@ void LibrarySystem::borrowBook(Member* mem) {
     }
     else {
         book->borrowBook(mem->getId(), 7); 
-        mem->addToHistory(book->getTitle() + " (Borrowed)"); 
+        mem->addToHistory(book->getTitle(), "Borrowed");
         std::cout << "Book borrowed successfully.\n";
     }
 }
@@ -592,12 +592,12 @@ void LibrarySystem::returnBook(Member* mem) {
 		std::string nextUser = book->processNextReservation();
 		Member *tmp = dynamic_cast<Member*>(findUser(nextUser));
 		book->borrowBook(tmp->getId(), 7); 
-        tmp->addToHistory(book->getTitle() + " (Borrowed)"); 
+        mem->addToHistory(book->getTitle(), "Borrowed");
 	}
 	else
 	    book->returnBook();
 
-    mem->addToHistory(book->getTitle() + " (Returned)");
+    mem->addToHistory(book->getTitle(), "Returned");
     std::cout << "Book returned successfully.\n";
 }
 

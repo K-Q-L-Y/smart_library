@@ -1,8 +1,8 @@
 Librarian|admin|Admin|admin@library.com
-Member|23096663|Seng Khye|sengkhye@gmail.com|Harry Potter (Borrowed),Harry Potter (Returned),Harry Potter (Borrowed),Harry Potter (Returned),Harry Potter (Borrowed),Harry Potter (Returned),Harry Potter (Returned)
+Member|23096663|Seng Khye|sengkhye@gmail.com|
 Librarian|1234|Chin Yen|cy@gmail.com
-Member|1|Member A|a@gmail.com|Harry Potter (Borrowed),Harry Potter (Borrowed),Harry Potter (Returned),Harry Potter (Borrowed),Lord of the Rings (Borrowed),Harry Potter (Returned),Harry Potter (Borrowed),Lord of the Rings (Returned),Lord of the Rings (Borrowed),Lord of the Rings (Returned),Harry Potter (Returned),Harry Potter (Returned)
-Member|2|Member B|b@gmail.com|Harry Potter (Borrowed),Harry Potter (Returned),Microelectronics (Borrowed),Microelectronics (Returned)
+Member|1|Member A|a@gmail.com|
+Member|2|Member B|b@gmail.com|
 Member|3|Member C|c@gmail.com|
 Member|4|Member D|d@gmail.com|
-Member|M001|JOHN|JOHN@gmail.com|Microelectronics (Borrowed)
+Member|M001|JOHN|JOHN@gmail.com|

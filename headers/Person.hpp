@@ -5,6 +5,21 @@
 #include <iostream>
 #include <list>
 
+// Helper functions
+static std::string formatCellP(std::string text, size_t width) {
+    if (text.length() > width) return text.substr(0, width - 3) + "...";
+    return text + std::string(width - text.length(), ' ');
+}
+
+static std::string formatDateP(long long t) {
+    time_t timer = (time_t)t;
+    struct tm* timeInfo = localtime(&timer);
+    if (!timeInfo) return "Unknown";
+    char buffer[20];
+    strftime(buffer, sizeof(buffer), "%b %d %Y", timeInfo);
+    return std::string(buffer);
+}
+
 // Base Class
 class Person {
 protected:
@@ -41,7 +56,7 @@ public:
     Member(std::string id, std::string name, std::string email);
     std::string getRole() const override;
     
-    void addToHistory(std::string bookTitle);
+	void addToHistory(std::string bookTitle, std::string action);
     void displayHistory() const;
     std::string toFileString() const override;
     
