@@ -192,7 +192,7 @@ void LibrarySystem::calculateFine(time_t dueDate) {
     if (seconds > 0) {
         int daysOverdue = (int)(seconds / (60 * 60 * 24));
         std::cout << "[!] Book is overdue by " << daysOverdue << " days.\n";
-        std::cout << "Fine: $" << daysOverdue * 0.50 << "\n"; 
+        std::cout << "Fine: RM" << daysOverdue * 0.50 << "\n"; 
     } else {
         std::cout << "Returned on time. No fine.\n";
     }
@@ -234,14 +234,12 @@ bool LibrarySystem::run() {
         return true; 
     }
 
-    if (choice == 1 && dynamic_cast<Librarian*>(user)) {
+    if (choice == 1 && dynamic_cast<Librarian*>(user))
         librarianMenu(dynamic_cast<Librarian*>(user));
-    } else if (choice == 2 && dynamic_cast<Member*>(user)) {
+    else if (choice == 2 && dynamic_cast<Member*>(user))
         memberMenu(dynamic_cast<Member*>(user));
-    } else {
+    else
         std::cout << "[Error] Access Denied or Wrong Role.\n\n";
-    }
-
     return true; 
 }
 
